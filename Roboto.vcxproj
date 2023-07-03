@@ -127,7 +127,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Arbol.cpp" />
+    <ClCompile Include="Nodo.cpp" />
+    <ClCompile Include="Robot.cpp" />
     <ClCompile Include="Roboto.cpp" />
+    <ClCompile Include="Sistema.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Arbol.h" />
+    <ClInclude Include="Nodo.h" />
+    <ClInclude Include="Robot.h" />
+    <ClInclude Include="Sistema.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="laberinto.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
