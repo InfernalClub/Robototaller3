@@ -41,18 +41,23 @@ void Sistema::comprobarPosicion(int fila, int columna)
 {
 
     if (laberinto [fila][columna] == '#') {
-        cout << "¡Error! Casilla del tipo pared" << endl;
+        cout << "Error! Casilla del tipo pared" << endl;
         return;
     }
-    else if (fila >= 0 && fila < laberinto.size() && columna >= 0 && columna < laberinto[fila].size())
+    else if (fila > 0 && fila < laberinto.size() && columna > 0 && columna < laberinto[fila].size())
     {
+        if (fila == 1 && columna == 1) 
+        {
+            cout << "Error! Casilla de inicio" << endl;
+            return;
+        }
         char elemento = laberinto[fila][columna];
         cout << "Se ha ingresado correctamente la cordenada" << endl;
         return;
     }
     else 
     {
-        cout << "¡Error! Casilla invalida" << endl;
+        cout << "Error! Casilla invalida" << endl;
         return;
     }
 }
@@ -61,8 +66,18 @@ void Sistema::Menu()
 {
     lecturaArchivo();
     cout << "Hola ingresa unas cordenadas: " << endl;
-    cin >> fila;
-    cin >> columna;
-    comprobarPosicion(fila, columna);
-
+    cin >> valor1;
+    cin >> valor2;
+    
+    if(isdigit(valor1) && isdigit(valor2))
+    {
+        fila = valor1 - '0';
+        columna = valor2 - '0';
+        comprobarPosicion(fila, columna);
+    }
+    else 
+    {
+        cout << "Error: El dato ingresado no es un digito." << endl;
+    }
+    
 }

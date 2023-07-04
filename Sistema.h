@@ -14,8 +14,10 @@ class Sistema
 {
 private:
 	Nodo* nodo;
-	int fila = 1;
-	int columna = 1;
+	int fila = 0;
+	int columna = 0;
+	char valor1 = '\0';
+	char valor2 = '\0';
 	vector<vector<char>> laberinto;
 
 public: 
