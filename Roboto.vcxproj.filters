@@ -24,24 +24,12 @@
     <ClCompile Include="Nodo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Robot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Arbol.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sistema.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Robot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Nodo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Arbol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

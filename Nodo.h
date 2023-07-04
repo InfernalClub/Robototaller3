@@ -1,15 +1,21 @@
 #pragma once
-#include "Robot.h"
 class Nodo
 {
 private:
-	Robot* robot;
-	Nodo* arriba;
-	Nodo* abajo;
+	char letra;
 	Nodo* izq;
 	Nodo* der;
+
 public:
-	Nodo(Robot* robot);
-	~Nodo() = default;
+	Nodo(char letra);
+	~Nodo();
+
+	char getLetra();
+	Nodo* getIzq();
+	Nodo* getDer();
+
+	void setLetra(char letra);
+	void setIzq(Nodo* izq);
+	void setDer(Nodo* der);
 };
 

@@ -3,7 +3,6 @@
 void Sistema::lecturaArchivo()
 {
     ifstream archivo("laberinto.txt");
-    vector<vector<char>> laberinto;
     string linea;
 
     //En caso de que la lectura falle
@@ -35,4 +34,35 @@ void Sistema::lecturaArchivo()
         cout << endl;
     }
     archivo.close();
+}
+
+
+void Sistema::comprobarPosicion(int fila, int columna)
+{
+
+    if (laberinto [fila][columna] == '#') {
+        cout << "¡Error! Casilla del tipo pared" << endl;
+        return;
+    }
+    else if (fila >= 0 && fila < laberinto.size() && columna >= 0 && columna < laberinto[fila].size())
+    {
+        char elemento = laberinto[fila][columna];
+        cout << "Se ha ingresado correctamente la cordenada" << endl;
+        return;
+    }
+    else 
+    {
+        cout << "¡Error! Casilla invalida" << endl;
+        return;
+    }
+}
+
+void Sistema::Menu()
+{
+    lecturaArchivo();
+    cout << "Hola ingresa unas cordenadas: " << endl;
+    cin >> fila;
+    cin >> columna;
+    comprobarPosicion(fila, columna);
+
 }
