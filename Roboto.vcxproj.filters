@@ -21,15 +21,9 @@
     <ClCompile Include="Sistema.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Nodo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sistema.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Nodo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

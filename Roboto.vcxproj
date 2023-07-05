@@ -127,12 +127,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Nodo.cpp" />
     <ClCompile Include="Roboto.cpp" />
     <ClCompile Include="Sistema.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Nodo.h" />
     <ClInclude Include="Sistema.h" />
   </ItemGroup>
   <ItemGroup>

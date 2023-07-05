@@ -7,22 +7,25 @@
 #include <vector>
 #include <mutex>
 #include <cctype>
-#include "Nodo.h"
 
 using namespace std;
 class Sistema
 {
 private:
-	Nodo* nodo;
-	int fila = 0;
-	int columna = 0;
-	char valor1 = '\0';
-	char valor2 = '\0';
 	vector<vector<char>> laberinto;
 
 public: 
-	void lecturaArchivo();
-    void Menu();
-	void comprobarPosicion(int fila, int columna);
+	vector <vector<char>> leerLaberinto();
+	bool verificarPosicion(const vector<vector<char>>& laberinto, int fila, int columna);
+
+	struct Posicion
+	{
+		int row;
+		int col;
+		Posicion(int r, int c) : row(r), col(c) {}
+	};
+
+	bool encontrarCamino(const Posicion& actual, const Posicion& objetivo, vector<Posicion>& camino);
+	void Menu();
 };
 
