@@ -25,11 +25,14 @@ vector<vector<char>> Sistema::leerLaberinto()
 			cout << endl;
 		}
 
+		cout << "El archivo fue cargado con exito" << endl;
+
 		archivo.close();
 	}
 	else
 	{
 		cout << "No se pudo abrir el archivo." << endl;
+		exit(1);
 	}
 	return laberinto;
 }
@@ -50,17 +53,11 @@ bool Sistema::verificarPosicion(const vector<vector<char>>& laberinto, int fila,
 		cout << "Error: La posicion ingresada contiene una pared." << endl;
 		return false;
 	}
-	//Verificar la posición inicial
-	if (fila == 1 && columna == 1)
-	{
-		cout << "Usted se encuentra en la coordenada inicial" << endl;
-		return false;
-	}
 	cout << "La coordenada ingresada esta vacia" << endl;
 	return true;
 }
 
-bool Sistema::encontrarCamino(const Posicion& actual, const Posicion& objetivo, vector<Posicion>& camino)
+bool Sistema::encontrarCamino(const Posicion& actual, const Posicion& objetivo, vector<Posicion>& camino) 
 {
 	// Verificar si estamos fuera de los límites de la matriz o si la posición actual es una pared
 	if (actual.row < 0 || actual.row >= 10 || actual.col < 0 || actual.col >= 10 || laberinto[actual.row][actual.col] == '#') {
@@ -68,7 +65,7 @@ bool Sistema::encontrarCamino(const Posicion& actual, const Posicion& objetivo, 
 	}
 
 	// Verificar si hemos llegado a la posición final
-	if (actual.row == objetivo.row && objetivo.col == actual.col) {
+	if (actual.row == objetivo.row && actual.col == objetivo.col) {
 		camino.push_back(actual);
 		return true;
 	}
@@ -99,38 +96,106 @@ bool Sistema::encontrarCamino(const Posicion& actual, const Posicion& objetivo, 
 	return false;
 }
 
+void Sistema::ejecutarEnHilo(const Posicion& inicio, const Posicion& objetivo, mutex& mutex, int numHilos, vector<vector<Posicion>>& caminosEncontrados)
+{
+	vector<thread> hilos;
+
+	// Crear los hilos y ejecutar la función en paralelo
+	for (int i = 0; i < numHilos; ++i) {
+		hilos.push_back(thread([=, &caminosEncontrados]() {
+			vector<Posicion> camino;
+
+			bool encontrado = encontrarCamino(inicio, objetivo, camino);
+			if (encontrado) {
+				lock_guard<std::mutex> lock();
+				// Agregar la ruta encontrada a la lista de caminos
+				caminosEncontrados.push_back(camino);
+			}
+			}));
+	}
+
+	// Esperar a que todos los hilos terminen
+	for (auto& hilo : hilos) {
+		hilo.join();
+	}
+}
+
 void Sistema::Menu()
 {
+	cout << "¡Bienvenido a Micromouse!" << endl;
+	cout << endl;
+	cout << "A continuacion, se realizara la carga" << endl;
+	cout << "del archivo laberinto.txt" << endl;
+	cout << endl;
+	cout << "Cargando..." << endl;
+	cout << endl;
+
 	this->laberinto = leerLaberinto();
+	mutex mutex;
+	vector<thread> hilos;
+	vector<vector<Posicion>> caminosEncontrados;
 
-	/*int fila = 1;
-	int columna = 2;
+	int filaInicio = 0;
+	int columnaInicio = 0;
+	int filaFinal = 0;
+	int columnaFinal = 0;
 
-	cout << "Ingrese cordenadas" << endl;
-	cin >> fila;
-	cin >> columna;
+	cout << "Ingrese coordenadas iniciales" << endl;
+	cin >> filaInicio;
+	cin >> columnaInicio;
 
-	verificarPosicion(this->laberinto, fila, columna);
-	*/
+	while (verificarPosicion(this->laberinto, filaInicio, columnaInicio)) {
+		Posicion inicio(filaInicio, columnaInicio); // Posición inicial
+		cout << "Ingrese coordenadas finales" << endl;
+		cin >> filaFinal;
+		cin >> columnaFinal;
 
-	Posicion inicio(1, 1);  // Posición inicial
-	Posicion objetivo(8, 7);   // Posición final
+		// Verifica si la posición final es la inicial
+		while (filaFinal != filaInicio || columnaFinal != columnaInicio) {
+			if (verificarPosicion(this->laberinto, filaFinal, columnaFinal)) {
+				Posicion objetivo(filaFinal, columnaFinal); // Posición final 
 
-	// Vector para almacenar el camino encontrado
-	vector<Posicion> camino;
+				// Vector para almacenar el camino encontrado
+				vector<Posicion> camino;
+				vector<vector<Posicion>> caminosEncontrados;
 
-	// Encontrar el camino
-	if (encontrarCamino(inicio, objetivo, camino)) {
-		// Imprimir el camino encontrado en orden inverso (desde la posición final hasta la inicial)
-		for (auto it = camino.rbegin(); it != camino.rend(); ++it) {
-			cout << "(" << it->row << "," << it->col << ") ";
+				ejecutarEnHilo(inicio, objetivo, mutex, 4, caminosEncontrados);
+
+				if (caminosEncontrados.empty()) {
+					cout << "No hay caminos disponibles." << endl;
+				}
+				else {
+					cout << "Caminos encontrados de (" << inicio.row << ", " << inicio.col << ") a (" << objetivo.row << ", " << objetivo.col << "):" << endl;
+					for (int i = 0; i < caminosEncontrados.size(); ++i) {
+						cout << "Ruta " << i + 1 << ":" << endl;
+						cout << "(" << inicio.row << ", " << inicio.col << ") -> Coordenada inicial" << endl;
+						for (int j = caminosEncontrados[i].size() - 2; j >= 0; --j) {
+							cout << "(" << caminosEncontrados[i][j].row << ", " << caminosEncontrados[i][j].col << ")" << endl;
+						}
+						if (i == caminosEncontrados.size() - 1) {
+							cout << "(" << objetivo.row << ", " << objetivo.col << ") -> Coordenada final" << endl;
+						}
+					}
+				}
+
+				// Limpiar los caminos encontrados para la siguiente búsqueda
+				caminosEncontrados.clear();
+			}
+			else {
+				cout << "Coordenadas inválidas. Ingrese nuevamente las coordenadas finales." << endl;
+			}
+
+			cout << "Ingrese coordenadas finales" << endl;
+			cin >> filaFinal;
+			cin >> columnaFinal;
 		}
-		cout << endl;
-	}
-	else {
-		cout << "No se encontro un camino valido." << endl;
-	}
 
+		cout << "Ingrese coordenadas iniciales" << endl;
+		cin >> filaInicio;
+		cin >> columnaInicio;
+	}
 }
+
+
 
 

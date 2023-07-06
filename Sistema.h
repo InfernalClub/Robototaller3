@@ -26,6 +26,7 @@ public:
 	};
 
 	bool encontrarCamino(const Posicion& actual, const Posicion& objetivo, vector<Posicion>& camino);
+	void ejecutarEnHilo(const Posicion& inicio, const Posicion& objetivo, mutex& mutex, int numHilos, vector<vector<Posicion>>& caminosEncontrados);
 	void Menu();
 };
 
