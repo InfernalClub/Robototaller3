@@ -39,6 +39,7 @@ vector<vector<char>> Sistema::leerLaberinto()
 
 bool Sistema::verificarPosicion(const vector<vector<char>>& laberinto, int fila, int columna)
 {
+	// Verificar si los valores ingresados son numeros o caracteres
 	if (isdigit(fila) || isdigit(columna)) {
 		cout << "Error: Los valores de fila y columna deben ser enteros." << endl;
 		return false;
@@ -150,15 +151,16 @@ void Sistema::Menu()
 
 				// Vector para almacenar el camino encontrado
 				vector<Posicion> camino;
+				// Vector para almacenar los dintintos caminos encontrados
 				vector<vector<Posicion>> caminosEncontrados;
 
 				ejecutarEnHilo(inicio, objetivo, mutex, 4, caminosEncontrados);
 
 				if (caminosEncontrados.empty()) {
-					cout << "No existen caminos entre la casilla de inicio (" << inicio.row << ", " << inicio.col << ") y la casilla final (" << objetivo.row << ", " << objetivo.col << ")" << endl;
+					cout << endl << "No existen caminos entre la casilla de inicio (" << inicio.row << ", " << inicio.col << ") y la casilla final (" << objetivo.row << ", " << objetivo.col << ")" << endl;
 				}
 				else {
-					cout << "Caminos encontrados de (" << inicio.row << ", " << inicio.col << ") a (" << objetivo.row << ", " << objetivo.col << "):" << endl;
+					cout << endl << "Caminos encontrados de (" << inicio.row << ", " << inicio.col << ") a (" << objetivo.row << ", " << objetivo.col << "):" << endl;
 					int ruta = 1;
 					for (const auto& camino : caminosEncontrados) {
 						cout << "Ruta " << ruta << ":" << endl;
@@ -177,14 +179,14 @@ void Sistema::Menu()
 				return;
 			}
 			else {
-				cout << "Coordenadas invalidas. Ingrese nuevamente las coordenadas finales." << endl;
+				cout << endl << "Coordenadas invalidas. Ingrese nuevamente las coordenadas finales." << endl;
 			}
 
-			cout << "Ingrese coordenadas finales" << endl;
+			cout << endl << "Ingrese coordenadas finales" << endl;
 			cin >> filaFinal;
 			cin >> columnaFinal;
 		}
-		cout << "Ingrese coordenadas iniciales" << endl;
+		cout << endl << "Ingrese coordenadas iniciales" << endl;
 		cin >> filaInicio;
 		cin >> columnaInicio;
 	}
