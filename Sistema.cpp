@@ -57,21 +57,22 @@ bool Sistema::verificarPosicion(const vector<vector<char>>& laberinto, int fila,
 	return true;
 }
 
-bool Sistema::encontrarCamino(const Posicion& actual, const Posicion& objetivo, vector<Posicion>& camino) 
+void Sistema::encontrarCaminos(const Posicion& actual, const Posicion& objetivo, vector<Posicion>& camino, vector<vector<Posicion>>& caminosEncontrados)
 {
 	// Verificar si estamos fuera de los límites de la matriz o si la posición actual es una pared
-	if (actual.row < 0 || actual.row >= 10 || actual.col < 0 || actual.col >= 10 || laberinto[actual.row][actual.col] == '#') {
-		return false;
+	if (actual.row < 0 || actual.row >= laberinto.size() || actual.col < 0 || actual.col >= laberinto[actual.row].size() || laberinto[actual.row][actual.col] == '#') {
+		return;
 	}
 
 	// Verificar si hemos llegado a la posición final
 	if (actual.row == objetivo.row && actual.col == objetivo.col) {
-		camino.push_back(actual);
-		return true;
+		caminosEncontrados.push_back(camino);
+		return;
 	}
 
 	// Marcar la posición actual como visitada
-	this->laberinto[actual.row][actual.col] = '#';
+	char temp = laberinto[actual.row][actual.col];
+	laberinto[actual.row][actual.col] = '#';
 
 	// Definir los movimientos posibles (arriba, abajo, izquierda, derecha)
 	const int dr[] = { -1, 1, 0, 0 };
@@ -83,17 +84,15 @@ bool Sistema::encontrarCamino(const Posicion& actual, const Posicion& objetivo, 
 		int newCol = actual.col + dc[i];
 
 		// Llamar recursivamente a la función para explorar desde la nueva posición
-		if (encontrarCamino(Posicion(newRow, newCol), objetivo, camino)) {
-			// Agregar la posición actual a la ruta
-			camino.push_back(actual);
-			return true;
+		if (newRow >= 0 && newRow < laberinto.size() && newCol >= 0 && newCol < laberinto[newRow].size() && laberinto[newRow][newCol] != '#') {
+			camino.push_back(Posicion(newRow, newCol));
+			encontrarCaminos(Posicion(newRow, newCol), objetivo, camino, caminosEncontrados);
+			camino.pop_back();
 		}
 	}
 
 	// Desmarcar la posición actual
-	this->laberinto[actual.row][actual.col] = ' ';
-
-	return false;
+	laberinto[actual.row][actual.col] = temp;
 }
 
 void Sistema::ejecutarEnHilo(const Posicion& inicio, const Posicion& objetivo, mutex& mutex, int numHilos, vector<vector<Posicion>>& caminosEncontrados)
@@ -104,13 +103,7 @@ void Sistema::ejecutarEnHilo(const Posicion& inicio, const Posicion& objetivo, m
 	for (int i = 0; i < numHilos; ++i) {
 		hilos.push_back(thread([=, &caminosEncontrados]() {
 			vector<Posicion> camino;
-
-			bool encontrado = encontrarCamino(inicio, objetivo, camino);
-			if (encontrado) {
-				lock_guard<std::mutex> lock();
-				// Agregar la ruta encontrada a la lista de caminos
-				caminosEncontrados.push_back(camino);
-			}
+			encontrarCaminos(inicio, objetivo, camino, caminosEncontrados);
 			}));
 	}
 
@@ -140,13 +133,13 @@ void Sistema::Menu()
 	int filaFinal = 0;
 	int columnaFinal = 0;
 
-	cout << "Ingrese coordenadas iniciales" << endl;
+	cout << endl << "Ingrese coordenadas iniciales" << endl;
 	cin >> filaInicio;
 	cin >> columnaInicio;
 
 	while (verificarPosicion(this->laberinto, filaInicio, columnaInicio)) {
 		Posicion inicio(filaInicio, columnaInicio); // Posición inicial
-		cout << "Ingrese coordenadas finales" << endl;
+		cout << endl << "Ingrese coordenadas finales" << endl;
 		cin >> filaFinal;
 		cin >> columnaFinal;
 
@@ -162,40 +155,37 @@ void Sistema::Menu()
 				ejecutarEnHilo(inicio, objetivo, mutex, 4, caminosEncontrados);
 
 				if (caminosEncontrados.empty()) {
-					cout << "No hay caminos disponibles." << endl;
+					cout << "No existen caminos entre la casilla de inicio (" << inicio.row << ", " << inicio.col << ") y la casilla final (" << objetivo.row << ", " << objetivo.col << ")" << endl;
 				}
 				else {
 					cout << "Caminos encontrados de (" << inicio.row << ", " << inicio.col << ") a (" << objetivo.row << ", " << objetivo.col << "):" << endl;
-					for (int i = 0; i < caminosEncontrados.size(); ++i) {
-						cout << "Ruta " << i + 1 << ":" << endl;
+					int ruta = 1;
+					for (const auto& camino : caminosEncontrados) {
+						cout << "Ruta " << ruta << ":" << endl;
 						cout << "(" << inicio.row << ", " << inicio.col << ") -> Coordenada inicial" << endl;
-						for (int j = caminosEncontrados[i].size() - 2; j >= 0; --j) {
-							cout << "(" << caminosEncontrados[i][j].row << ", " << caminosEncontrados[i][j].col << ")" << endl;
+						for (size_t i = 0; i < camino.size() - 1; ++i) {
+							cout << "(" << camino[i].row << ", " << camino[i].col << ")" << endl;
 						}
-						if (i == caminosEncontrados.size() - 1) {
-							cout << "(" << objetivo.row << ", " << objetivo.col << ") -> Coordenada final" << endl;
-						}
+						cout << "(" << camino.back().row << ", " << camino.back().col << ") -> Coordenada final" << endl;
+						cout << endl;
+						ruta++;
 					}
 				}
 
 				// Limpiar los caminos encontrados para la siguiente búsqueda
 				caminosEncontrados.clear();
+				return;
 			}
 			else {
-				cout << "Coordenadas inválidas. Ingrese nuevamente las coordenadas finales." << endl;
+				cout << "Coordenadas invalidas. Ingrese nuevamente las coordenadas finales." << endl;
 			}
 
 			cout << "Ingrese coordenadas finales" << endl;
 			cin >> filaFinal;
 			cin >> columnaFinal;
 		}
-
 		cout << "Ingrese coordenadas iniciales" << endl;
 		cin >> filaInicio;
 		cin >> columnaInicio;
 	}
 }
-
-
-
-

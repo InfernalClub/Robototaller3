@@ -25,7 +25,7 @@ public:
 		Posicion(int r, int c) : row(r), col(c) {}
 	};
 
-	bool encontrarCamino(const Posicion& actual, const Posicion& objetivo, vector<Posicion>& camino);
+	void encontrarCaminos(const Posicion& actual, const Posicion& objetivo, vector<Posicion>& camino, vector<vector<Posicion>>& caminosEncontrados);
 	void ejecutarEnHilo(const Posicion& inicio, const Posicion& objetivo, mutex& mutex, int numHilos, vector<vector<Posicion>>& caminosEncontrados);
 	void Menu();
 };

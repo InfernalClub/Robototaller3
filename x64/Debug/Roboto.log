@@ -1,4 +1,2 @@
 ﻿  Sistema.cpp
-D:\Codigos y Proyectos de Programación\C++\Robototaller3\Sistema.cpp(110,28): warning C4930: 'std::lock_guard<std::mutex> lock(void)': no se ha llamado a la función prototipo (¿se pensó una definición de variable?)
-D:\Codigos y Proyectos de Programación\C++\Robototaller3\Sistema.cpp(172,18): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
   Roboto.vcxproj -> D:\Codigos y Proyectos de Programación\C++\Robototaller3\x64\Debug\Roboto.exe
