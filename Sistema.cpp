@@ -2,6 +2,12 @@
 
 vector<vector<char>> Sistema::leerLaberinto()
 {
+	/*Para la correcta lectura del archivo "laberinto.txt":
+	El archivo txt debe estar en un formato en específico para la utilización de este programa.
+	El formato a leer debe ser de la siguiente forma ", ,#," y no ",  , #,". Dejaremos adjunto
+	el archivo txt que nosotros utilizamos para la realizacion del programa y con el cual no hemos
+	tenido falla, les pedimos encarecidamente utilizar ese y en caso de modificacion, respetar el
+	formato ya mencionado.*/
 	ifstream archivo ("laberinto.txt");
 
 	if (archivo.is_open()) 
@@ -120,6 +126,7 @@ void Sistema::Menu()
 	cout << endl;
 
 	this->laberinto = leerLaberinto();
+
 	mutex mutex;
 	vector<thread> hilos;
 	vector<vector<Posicion>> caminosEncontrados;
@@ -155,6 +162,7 @@ void Sistema::Menu()
 				else
 				{
 					cout << "Valor no valido. Por favor ingrese nuevamente." << endl;
+					//Limpia y Descarta cualquier entrada incorrecta o inválida
 					cin.clear();
 					cin.ignore(numeric_limits<streamsize>::max(), '\n');
 				}
@@ -162,6 +170,7 @@ void Sistema::Menu()
 			else
 			{
 				cout << "Valor no valido. Por favor ingrese nuevamente." << endl;
+				//Limpia y Descarta cualquier entrada incorrecta o inválida
 				cin.clear();
 				cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			}
@@ -197,6 +206,7 @@ void Sistema::Menu()
 				else
 				{
 					cout << "Valor no valido. Por favor ingrese nuevamente." << endl;
+					//Limpia y Descarta cualquier entrada incorrecta o inválida
 					cin.clear();
 					cin.ignore(numeric_limits<streamsize>::max(), '\n');
 				}
@@ -204,6 +214,7 @@ void Sistema::Menu()
 			else
 			{
 				cout << "Valor no valido. Por favor ingrese nuevamente." << endl;
+				//Limpia y Descarta cualquier entrada incorrecta o inválida
 				cin.clear();
 				cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			}
@@ -228,6 +239,7 @@ void Sistema::Menu()
 		cout << endl << "No existen caminos entre la casilla de inicio (" << inicio.row << ", " << inicio.col << ") y la casilla final (" << objetivo.row << ", " << objetivo.col << ")" << endl;
 	}
 	else {
+		//Despliegue de los hilos en pantalla
 		cout << endl << "Caminos encontrados de (" << inicio.row << ", " << inicio.col << ") a (" << objetivo.row << ", " << objetivo.col << "):" << endl;
 		int ruta = 1;
 		for (const auto& camino : caminosEncontrados) {
