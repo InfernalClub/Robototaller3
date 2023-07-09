@@ -39,11 +39,6 @@ vector<vector<char>> Sistema::leerLaberinto()
 
 bool Sistema::verificarPosicion(const vector<vector<char>>& laberinto, int fila, int columna)
 {
-	// Verificar si los valores ingresados son numeros o caracteres
-	if (isdigit(fila) || isdigit(columna)) {
-		cout << "Error: Los valores de fila y columna deben ser enteros." << endl;
-		return false;
-	}
 	// Verificar los límites de la matriz
 	if (fila < 0 || fila >= laberinto.size() || columna < 0 || columna >= laberinto[fila].size()) {
 		cout << "Error: La posicion ingresada esta fuera de los limites del laberinto." << endl;
@@ -134,60 +129,117 @@ void Sistema::Menu()
 	int filaFinal = 0;
 	int columnaFinal = 0;
 
-	cout << endl << "Ingrese coordenadas iniciales" << endl;
-	cin >> filaInicio;
-	cin >> columnaInicio;
+	bool coordenadasValidas = false;
 
-	while (verificarPosicion(this->laberinto, filaInicio, columnaInicio)) {
-		Posicion inicio(filaInicio, columnaInicio); // Posición inicial
-		cout << endl << "Ingrese coordenadas finales" << endl;
-		cin >> filaFinal;
-		cin >> columnaFinal;
-
-		// Verifica si la posición final es la inicial
-		while (filaFinal != filaInicio || columnaFinal != columnaInicio) {
-			if (verificarPosicion(this->laberinto, filaFinal, columnaFinal)) {
-				Posicion objetivo(filaFinal, columnaFinal); // Posición final 
-
-				// Vector para almacenar el camino encontrado
-				vector<Posicion> camino;
-				// Vector para almacenar los dintintos caminos encontrados
-				vector<vector<Posicion>> caminosEncontrados;
-
-				ejecutarEnHilo(inicio, objetivo, mutex, 4, caminosEncontrados);
-
-				if (caminosEncontrados.empty()) {
-					cout << endl << "No existen caminos entre la casilla de inicio (" << inicio.row << ", " << inicio.col << ") y la casilla final (" << objetivo.row << ", " << objetivo.col << ")" << endl;
-				}
-				else {
-					cout << endl << "Caminos encontrados de (" << inicio.row << ", " << inicio.col << ") a (" << objetivo.row << ", " << objetivo.col << "):" << endl;
-					int ruta = 1;
-					for (const auto& camino : caminosEncontrados) {
-						cout << "Ruta " << ruta << ":" << endl;
-						cout << "(" << inicio.row << ", " << inicio.col << ") -> Coordenada inicial" << endl;
-						for (size_t i = 0; i < camino.size() - 1; ++i) {
-							cout << "(" << camino[i].row << ", " << camino[i].col << ")" << endl;
-						}
-						cout << "(" << camino.back().row << ", " << camino.back().col << ") -> Coordenada final" << endl;
-						cout << endl;
-						ruta++;
+	while (!coordenadasValidas)
+	{
+		// Ingreso y verificación de la coordenada inicial
+		while (true)
+		{
+			cout << "Ingrese el primer valor de la coordenada inicial" << endl;
+			if (cin >> filaInicio)
+			{
+				cout << "Ingrese el segundo valor de la coordenada inicial" << endl;
+				if (cin >> columnaInicio)
+				{
+					// Verificar la posición inicial
+					if (verificarPosicion(this->laberinto, filaInicio, columnaInicio))
+					{
+						break;  // Salir del bucle si las coordenadas son válidas
+					}
+					else
+					{
+						cout << "Coordenadas iniciales no validas. Por favor ingrese nuevamente." << endl;
 					}
 				}
-
-				// Limpiar los caminos encontrados para la siguiente búsqueda
-				caminosEncontrados.clear();
-				return;
+				else
+				{
+					cout << "Valor no valido. Por favor ingrese nuevamente." << endl;
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				}
 			}
-			else {
-				cout << endl << "Coordenadas invalidas. Ingrese nuevamente las coordenadas finales." << endl;
+			else
+			{
+				cout << "Valor no valido. Por favor ingrese nuevamente." << endl;
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
 			}
-
-			cout << endl << "Ingrese coordenadas finales" << endl;
-			cin >> filaFinal;
-			cin >> columnaFinal;
 		}
-		cout << endl << "Ingrese coordenadas iniciales" << endl;
-		cin >> filaInicio;
-		cin >> columnaInicio;
+
+		// Ingreso y verificación de la coordenada final
+		while (true)
+		{
+			cout << "Ingrese el primer valor de la coordenada final" << endl;
+			if (cin >> filaFinal)
+			{
+				cout << "Ingrese el segundo valor de la coordenada final" << endl;
+				if (cin >> columnaFinal)
+				{
+					// Verificar la posición final
+					if (verificarPosicion(this->laberinto, filaFinal, columnaFinal))
+					{
+						if (filaFinal != filaInicio || columnaFinal != columnaInicio)
+						{
+							coordenadasValidas = true;  // Establecer coordenadas válidas y salir del bucle
+							break;
+						}
+						else
+						{
+							cout << "Coordenadas finales no pueden ser iguales a las coordenadas iniciales. Por favor ingrese nuevamente." << endl;
+						}
+					}
+					else
+					{
+						cout << "Coordenadas finales no validas. Por favor ingrese nuevamente." << endl;
+					}
+				}
+				else
+				{
+					cout << "Valor no valido. Por favor ingrese nuevamente." << endl;
+					cin.clear();
+					cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				}
+			}
+			else
+			{
+				cout << "Valor no valido. Por favor ingrese nuevamente." << endl;
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			}
+		}
+
+		if (!coordenadasValidas)
+		{
+			cout << "Las coordenadas iniciales y finales son iguales. Por favor, ingrese nuevas coordenadas." << endl;
+		}
+	}
+
+	Posicion inicio(filaInicio, columnaInicio); // Posición inicial
+	Posicion objetivo(filaFinal, columnaFinal); // Posición final 
+
+	// Vector para almacenar el camino encontrado
+	vector<Posicion> camino;
+
+	// Ejecutar búsqueda de caminos
+	ejecutarEnHilo(inicio, objetivo, mutex, 4, caminosEncontrados);
+
+	if (caminosEncontrados.empty()) {
+		cout << endl << "No existen caminos entre la casilla de inicio (" << inicio.row << ", " << inicio.col << ") y la casilla final (" << objetivo.row << ", " << objetivo.col << ")" << endl;
+	}
+	else {
+		cout << endl << "Caminos encontrados de (" << inicio.row << ", " << inicio.col << ") a (" << objetivo.row << ", " << objetivo.col << "):" << endl;
+		int ruta = 1;
+		for (const auto& camino : caminosEncontrados) {
+			cout << "Ruta " << ruta << ":" << endl;
+			cout << "(" << inicio.row << ", " << inicio.col << ") -> Coordenada inicial" << endl;
+			for (size_t i = 0; i < camino.size() - 1; ++i) {
+				cout << "(" << camino[i].row << ", " << camino[i].col << ")" << endl;
+			}
+			cout << "(" << camino.back().row << ", " << camino.back().col << ") -> Coordenada final" << endl;
+			cout << endl;
+			ruta++;
+		}
 	}
 }
+
